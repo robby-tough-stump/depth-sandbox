@@ -20,7 +20,9 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+
 import com.google.ar.core.examples.java.common.rendering.ShaderUtil;
+
 import java.io.IOException;
 import java.util.ArrayList;
 

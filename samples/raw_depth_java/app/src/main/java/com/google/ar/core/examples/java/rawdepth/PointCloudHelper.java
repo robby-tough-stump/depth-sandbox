@@ -18,9 +18,11 @@ package com.google.ar.core.examples.java.rawdepth;
 
 import android.media.Image;
 import android.media.Image.Plane;
+
 import com.google.ar.core.CameraIntrinsics;
 import com.google.ar.core.Coordinates2d;
 import com.google.ar.core.Frame;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;

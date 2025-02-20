@@ -21,9 +21,12 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Config;
@@ -42,7 +45,9 @@ import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException;
+
 import java.io.IOException;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -55,6 +60,8 @@ public class RawDepthActivity extends AppCompatActivity implements GLSurfaceView
 
   // Rendering. The Renderers are created here, and initialized when the GL surface is created.
   private GLSurfaceView surfaceView;
+
+  private ImageView imageView;
 
   private boolean installRequested;
   private boolean depthReceived;
@@ -87,6 +94,8 @@ public class RawDepthActivity extends AppCompatActivity implements GLSurfaceView
     surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     surfaceView.setWillNotDraw(false);
 
+    imageView = findViewById(R.id.img);
+
     // Set up confidence threshold slider.
     SeekBar seekBar = findViewById(R.id.slider);
     seekBar.setProgress((int) (renderer.getPointAmount() * seekBar.getMax()));
@@ -97,19 +106,19 @@ public class RawDepthActivity extends AppCompatActivity implements GLSurfaceView
   }
 
   private SeekBar.OnSeekBarChangeListener seekBarChangeListener =
-      new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-          float progressNormalized = (float) progress / seekBar.getMax();
-          renderer.setPointAmount(progressNormalized);
-        }
+          new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+              float progressNormalized = (float) progress / seekBar.getMax();
+              renderer.setPointAmount(progressNormalized);
+            }
 
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {}
-      };
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+          };
 
   @Override
   protected void onDestroy() {
@@ -151,7 +160,7 @@ public class RawDepthActivity extends AppCompatActivity implements GLSurfaceView
         // Create the session.
         session = new Session(/* context= */ this);
       } catch (UnavailableArcoreNotInstalledException
-          | UnavailableUserDeclinedInstallationException e) {
+               | UnavailableUserDeclinedInstallationException e) {
         message = "Please install ARCore";
         exception = e;
       } catch (UnavailableApkTooOldException e) {
@@ -220,7 +229,7 @@ public class RawDepthActivity extends AppCompatActivity implements GLSurfaceView
     super.onRequestPermissionsResult(requestCode, permissions, results);
     if (!CameraPermissionHelper.hasCameraPermission(this)) {
       Toast.makeText(this, "Camera permission is needed to run this application", Toast.LENGTH_LONG)
-          .show();
+              .show();
       if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
         // Permission denied with checking "Do not ask again".
         CameraPermissionHelper.launchPermissionSettings(this);
@@ -281,7 +290,7 @@ public class RawDepthActivity extends AppCompatActivity implements GLSurfaceView
           // that the app will resume with tracking.
           if (depthReceived) {
             messageSnackbarHelper.showMessage(
-                this, TrackingStateHelper.getTrackingFailureReasonString(camera));
+                    this, TrackingStateHelper.getTrackingFailureReasonString(camera));
           }
 
           // If not tracking, do not render the point cloud.
@@ -290,6 +299,11 @@ public class RawDepthActivity extends AppCompatActivity implements GLSurfaceView
 
         // Check if the frame contains new depth data or a 3D reprojection of the previous data. See
         // documentation of acquireRawDepthImage16Bits for more details.
+
+        ////////
+        DepthDisplayer.INSTANCE.showDepth(frame,session,imageView);
+        ////////
+
         boolean containsNewDepthData;
         try (Image depthImage = frame.acquireRawDepthImage16Bits()) {
           containsNewDepthData = depthTimestamp == depthImage.getTimestamp();

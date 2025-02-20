@@ -19,11 +19,27 @@
     android:layout_height="match_parent"
     tools:context="com.google.ar.core.examples.java.rawdepth.RawDepthActivity">
 
-  <android.opengl.GLSurfaceView
-      android:id="@+id/surfaceview"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:layout_gravity="top"/>
+<!--  <FrameLayout-->
+<!--      android:layout_width="match_parent"-->
+<!--      android:layout_height="match_parent">-->
+
+
+    <android.opengl.GLSurfaceView
+        android:id="@+id/surfaceview"
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
+        android:layout_gravity="top"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:id="@+id/img"
+        android:layout_below="@id/surfaceview">
+
+    </ImageView>
+
+<!--  </FrameLayout>-->
+
 
   <SeekBar
       android:id="@+id/slider"
