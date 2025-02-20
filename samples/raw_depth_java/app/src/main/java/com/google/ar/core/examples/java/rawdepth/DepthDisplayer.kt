@@ -15,15 +15,21 @@ object DepthDisplayer {
     const val TAG = "DepthDisplayer"
 
     fun showDepth(frame: Frame, session: Session, view: ImageView) {
-//        Log.d(TAG, "depth displayin")
 
         var depthImage: Image? = null
-        try { depthImage = frame.acquireRawDepthImage16Bits() }catch (e: NotYetAvailableException) { return }
+        try { depthImage = frame.acquireRawDepthImage16Bits() }catch (e: NotYetAvailableException) {
+            Log.e(TAG, e.stackTraceToString())
+            return }
         val depthWidth = depthImage.width
         val depthHeight = depthImage.height
 
         //ok we're going to try and turn this into a bitmap
-        val outputBitmap = Bitmap.createBitmap(depthWidth, depthHeight, Bitmap.Config.ARGB_8888)
+        val outputBitmap = Bitmap.createBitmap(depthHeight, depthWidth, Bitmap.Config.ARGB_8888)
+        for (row in 0 until outputBitmap.height) {
+            for (column in 0 until outputBitmap.width) {
+                outputBitmap.setPixel(column, row, Color.RED)
+            }
+        }
 
         val depthShortBuffer = depthImage.planes[0].buffer.order(ByteOrder.nativeOrder()).asShortBuffer()
 
@@ -42,16 +48,18 @@ object DepthDisplayer {
                     val intensity = (depthProportion*0xFF).toInt()
                     bitmapColor = Color.argb(0xFF, intensity, intensity, intensity)
 
-                    Log.d(TAG, depthMillimeters.toString())
+                    //Log.d(TAG, depthMillimeters.toString())
 
                 }
 
-                outputBitmap.setPixel(column, row, bitmapColor)
+                outputBitmap.setPixel(depthHeight - 1 - row, column, bitmapColor)
                 
 
 
             }
         }
+        Log.d(TAG, "settimg bitmap")
+
         view.setImageBitmap(outputBitmap)
     }
 }
